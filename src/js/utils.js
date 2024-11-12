@@ -23,7 +23,21 @@
  * ```
  * */
 export function calcTileType(index, boardSize) {
-  // TODO: ваш код будет тут
+  const row =  Math.floor(index / boardSize);
+  const col = index % boardSize;
+
+  // Проверка углов
+  if (row === 0 && col === 0) return 'top-left';
+  if (row === 0 && col === boardSize - 1) return 'top-right';
+  if (row === boardSize - 1 && col === 0) return 'bottom-left';
+  if (row === boardSize - 1 && col === boardSize - 1) return 'bottom-right';
+
+  // Проверка краёв
+  if (row === 0) return 'top';
+  if (row === boardSize - 1) return 'bottom';
+  if (col === 0) return 'left';
+  if (col === boardSize - 1) return 'right';
+
   return 'center';
 }
 
@@ -37,4 +51,8 @@ export function calcHealthLevel(health) {
   }
 
   return 'high';
+}
+
+export function formatCharacterInfo({ level, attack, defence, health }) {
+  return `🎖${level} ⚔${attack} 🛡${defence} ❤${health}`;
 }
