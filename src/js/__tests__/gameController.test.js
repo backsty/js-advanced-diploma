@@ -18,7 +18,12 @@ describe("GameController", () => {
             redrawPositions: jest.fn(),
             addCellEnterListener: jest.fn(),
             addCellLeaveListener: jest.fn(),
+            addCellClickListener: jest.fn(),
             deselectCell: jest.fn(),
+            selectCell: jest.fn(),
+            showError: jest.fn(),
+            showCellTooltip: jest.fn(),
+            hideCellTooltip: jest.fn(),
             boardSize: 8,
             cells: Array(64).fill(null)
         };
@@ -121,6 +126,7 @@ describe("GameController", () => {
             
             expect(gamePlay.addCellEnterListener).toHaveBeenCalledWith(gameCtrl.onCellEnter);
             expect(gamePlay.addCellLeaveListener).toHaveBeenCalledWith(gameCtrl.onCellLeave);
+            expect(gamePlay.addCellClickListener).toHaveBeenCalledWith(gameCtrl.onCellClick);
         });
     
         test('should draw initial game state', () => {
@@ -128,6 +134,60 @@ describe("GameController", () => {
             
             expect(gamePlay.drawUi).toHaveBeenCalledWith('prairie');
             expect(gamePlay.redrawPositions).toHaveBeenCalled();
+        });
+    });
+
+    describe('character selection', () => {
+        test('should select player character on click', () => {
+            const bowman = new Bowman(1);
+            const position = 0;
+            gameCtrl.positions = [new PositionedCharacter(bowman, position)];
+
+            gameCtrl.onCellClick(position);
+
+            expect(gamePlay.selectCell).toHaveBeenCalledWith(position);
+        });
+
+        test('should show error when clicking empty cell', () => {
+            gameCtrl.positions = [];
+            gameCtrl.onCellClick(0);
+            expect(gamePlay.showError).toHaveBeenCalled();
+        });
+
+        test('should show error when clicking enemy character', () => {
+            const deamon = new Daemon(1);
+            const position = 63;
+            gameCtrl.positions = [new PositionedCharacter(deamon, position)];
+
+            gameCtrl.onCellClick(position);
+
+            expect(gamePlay.showError).toHaveBeenCalled();
+            expect(gamePlay.selectCell).not.toHaveBeenCalled();
+        });
+
+        test('should deselect previous character when selecting new one', () => {
+            const bowman1 = new Bowman(1);
+            const bowman2 = new Bowman(2);
+            gameCtrl.positions = [
+                new PositionedCharacter(bowman1, 0),
+                new PositionedCharacter(bowman2, 1)
+            ];
+            gameCtrl.onCellClick(0);
+            gameCtrl.onCellClick(1);
+
+            expect(gamePlay.deselectCell).toHaveBeenCalledWith(0);
+            expect(gamePlay.selectCell).toHaveBeenCalledWith(1);
+        });
+
+        test('should handle multiple selections correctly', () => {
+            const bowman = new Bowman(1);
+            gameCtrl.positions = [new PositionedCharacter(bowman, 0)];
+
+            gameCtrl.onCellClick(0);
+            gameCtrl.onCellClick(0);
+
+            expect(gamePlay.deselectCell).toHaveBeenCalledWith(0);
+            expect(gamePlay.selectCell).toHaveBeenCalledTimes(2);
         });
     });
 });

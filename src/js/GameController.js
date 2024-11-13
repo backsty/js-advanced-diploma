@@ -12,9 +12,11 @@ export default class GameController {
     this.stateService = stateService;
     this.playerTypes = null;
     this.enemyTypes = null;
+    this.selectedCharacter = null;
 
     this.onCellEnter = this.onCellEnter.bind(this);
     this.onCellLeave = this.onCellLeave.bind(this);
+    this.onCellClick = this.onCellClick.bind(this);
   }
 
   init() {
@@ -28,6 +30,7 @@ export default class GameController {
 
     this.gamePlay.addCellEnterListener(this.onCellEnter);
     this.gamePlay.addCellLeaveListener(this.onCellLeave);
+    this.gamePlay.addCellClickListener(this.onCellClick);
   }
 
   getPositions() {
@@ -64,7 +67,26 @@ export default class GameController {
   }
 
   onCellClick(index) {
-    // TODO: react to click
+    const clickedChar = this.positions.find(pos => pos.position === index);
+
+    if (!clickedChar) {
+      this.gamePlay.showError('Выберите персонажа!');
+      return;
+    }
+
+    const isPlayerChar = playerTypes.some(type => clickedChar.character instanceof type);
+
+    if (!isPlayerChar) {
+      this.gamePlay.showError('Выберите персонажа игрока!');
+      return;
+    }
+
+    if (this.selectedCharacter) {
+      this.gamePlay.deselectCell(this.selectedCharacter.position);
+    }
+
+    this.selectedCharacter = clickedChar;
+    this.gamePlay.selectCell(index);
   }
 
   onCellEnter(index) {
