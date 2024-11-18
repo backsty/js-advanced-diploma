@@ -23,20 +23,14 @@
  * ```
  * */
 export function calcTileType(index, boardSize) {
-  const row =  Math.floor(index / boardSize);
-  const col = index % boardSize;
-
-  // Проверка углов
-  if (row === 0 && col === 0) return 'top-left';
-  if (row === 0 && col === boardSize - 1) return 'top-right';
-  if (row === boardSize - 1 && col === 0) return 'bottom-left';
-  if (row === boardSize - 1 && col === boardSize - 1) return 'bottom-right';
-
-  // Проверка краёв
-  if (row === 0) return 'top';
-  if (row === boardSize - 1) return 'bottom';
-  if (col === 0) return 'left';
-  if (col === boardSize - 1) return 'right';
+  if (index === 0) return 'top-left';
+  if (index > 0 && index < boardSize - 1) return 'top';
+  if (index === boardSize - 1) return 'top-right';
+  if (index === (boardSize * boardSize) - 1) return 'bottom-right';
+  if (index > boardSize * (boardSize - 1) && index < (boardSize * boardSize) - 1) return 'bottom';
+  if (index % boardSize === boardSize - 1) return 'right';
+  if (index === boardSize * (boardSize - 1)) return 'bottom-left';
+  if (index % boardSize === 0) return 'left';
 
   return 'center';
 }

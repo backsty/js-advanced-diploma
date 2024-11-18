@@ -14,7 +14,7 @@ export function* characterGenerator(allowedTypes, maxLevel) {
   while (true) {
     const index = Math.floor(Math.random() * allowedTypes.length);
     const level = Math.floor(Math.random() * maxLevel) + 1;
-    yield new allowedTypes[index](level);
+    yield { character: new allowedTypes[index](level), level };
   }
 }
 
@@ -26,12 +26,14 @@ export function* characterGenerator(allowedTypes, maxLevel) {
  * @returns экземпляр Team, хранящий экземпляры персонажей. Количество персонажей в команде - characterCount
  * */
 export function generateTeam(allowedTypes, maxLevel, characterCount) {
-  const team = [];
   const generator = characterGenerator(allowedTypes, maxLevel);
+  const team = new Team();
   
-  for (let i = 0; i < characterCount; i++) {
-    team.push(generator.next().value);
+  for (let i = 0; i < characterCount; i += 1) {
+    const nextHero = generator.next().value;
+    team.add(nextHero.character);
   }
 
-  return new Team(team);
+  team.toArray();
+  return team.characters;
 }

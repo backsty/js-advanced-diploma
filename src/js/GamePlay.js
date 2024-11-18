@@ -1,8 +1,8 @@
 import { calcHealthLevel, calcTileType } from './utils.js';
 
 export default class GamePlay {
-  constructor() {
-    this.boardSize = 8;
+  constructor(boardSize = 8) {
+    this.boardSize = boardSize;
     this.container = null;
     this.boardEl = null;
     this.cells = [];
@@ -12,6 +12,7 @@ export default class GamePlay {
     this.newGameListeners = [];
     this.saveGameListeners = [];
     this.loadGameListeners = [];
+    this.escListener = null;
   }
 
   bindToDOM(container) {
@@ -47,8 +48,11 @@ export default class GamePlay {
     this.newGameEl.addEventListener('click', event => this.onNewGameClick(event));
     this.saveGameEl.addEventListener('click', event => this.onSaveGameClick(event));
     this.loadGameEl.addEventListener('click', event => this.onLoadGameClick(event));
+    document.addEventListener('keydown', (event) => this.onEsc(event));
 
     this.boardEl = this.container.querySelector('[data-id=board]');
+    // Я добавил 
+    this.boardEl.setAttribute('style', `grid-template-columns: repeat(${this.boardSize}, 1fr)`);
 
     this.boardEl.classList.add(theme);
     for (let i = 0; i < this.boardSize ** 2; i += 1) {
@@ -145,6 +149,15 @@ export default class GamePlay {
     this.loadGameListeners.push(callback);
   }
 
+  /**
+   * Add listener to Esc press the key
+   *
+   * @param callback
+   */
+  addEscListener(callback) {
+    this.escListener = callback;
+  }
+
   onCellEnter(event) {
     event.preventDefault();
     const index = this.cells.indexOf(event.currentTarget);
@@ -177,6 +190,13 @@ export default class GamePlay {
     this.loadGameListeners.forEach(o => o.call(null));
   }
 
+  onEsc(event) {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      this.escListener();
+    }
+  }
+
   static showError(message) {
     alert(message);
   }
@@ -192,8 +212,12 @@ export default class GamePlay {
 
   deselectCell(index) {
     const cell = this.cells[index];
-    cell.classList.remove(...Array.from(cell.classList)
-      .filter(o => o.startsWith('selected')));
+    cell.classList.remove(...Array.from(cell.classList).filter((o) => o.startsWith('selected')));
+  }
+
+  deselectAll() {
+    const { cells } = this;
+    cells.forEach((cell) => this.deselectCell(cells.indexOf(cell)));
   }
 
   showCellTooltip(message, index) {

@@ -5,7 +5,12 @@ export default class GameState {
 
   static from(object) {
     if (typeof object === 'object') {
-      return object;
+      return {
+        level: object.level,
+        positions: object.positionsToDraw,
+        theme: object.theme,
+        score: object.score,
+      };
     }
     return null;
   }
