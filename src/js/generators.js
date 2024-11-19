@@ -42,7 +42,6 @@ export function generateTeam(allowedTypes, maxLevel, characterCount) {
     team.add(nextHero.character);
   }
 
-  // team.toArray();
-  // return team.characters;
-  return team;
+  team.toArray();
+  return team.characters;
 }

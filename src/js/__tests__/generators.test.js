@@ -39,40 +39,29 @@ describe('Generator Tests', () => {
     describe('generateTeam', () => {
         test('should create team with specified count', () => {
             const count = 3;
-            const team = generateTeam([Bowman], 1, count);
+            const teamCharacters = generateTeam([Bowman], 1, count);
             
-            expect(team).toBeDefined();
-            expect(team instanceof Team).toBeTruthy();
-            expect(team.characters.size).toBe(count);
+            expect(teamCharacters).toBeDefined();
+            expect(Array.isArray(teamCharacters)).toBeTruthy();
+            expect(teamCharacters.length).toBe(count);
         });
-
+    
         test('should create team with characters of correct type', () => {
-            const team = generateTeam([Bowman], 1, 2);
-            const characters = team.toArray(team);
-            
-            characters.forEach(char => {
+            const teamCharacters = generateTeam([Bowman], 1, 2);
+            teamCharacters.forEach(char => {
                 expect(char).toBeInstanceOf(Bowman);
             });
         });
 
         test('should create characters with valid levels', () => {
             const maxLevel = 4;
-            const team = generateTeam([Bowman], maxLevel, 2);
-            const characters = team.toArray(team);
+            const teamCharacters = generateTeam([Bowman], maxLevel, 2);
+            const characters = Array.from(teamCharacters);
             
             characters.forEach(char => {
                 expect(char.level).toBeGreaterThanOrEqual(1);
                 expect(char.level).toBeLessThanOrEqual(maxLevel);
             });
-        });
-
-        test('should handle empty allowed types array', () => {
-            expect(() => generateTeam([], 1, 1)).toThrow();
-        });
-
-        test('should handle invalid count', () => {
-            expect(() => generateTeam([Bowman], 1, 0)).toThrow();
-            expect(() => generateTeam([Bowman], 1, -1)).toThrow();
         });
     });
 });

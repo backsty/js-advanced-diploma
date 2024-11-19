@@ -45,6 +45,6 @@ export default class Team {
   }
 
   toArray() {
-    return Array.from(this.characters);
+    this.characters = Array.from(this.characters);
   }
 }
