@@ -1,8 +1,6 @@
 import Team from '../Team.js';
 import { describe, test, expect, beforeEach } from '@jest/globals';
 
-// src/js/Team.test.js
-
 describe('Team', () => {
     let team;
 
@@ -46,11 +44,12 @@ describe('Team', () => {
         const char1 = { name: 'Bowman' };
         const char2 = { name: 'Swordsman' };
         team.addAll(char1, char2);
-        const result = team.toArray();
-        expect(Array.isArray(result)).toBeTruthy();
-        expect(result).toHaveLength(2);
-        expect(result).toContain(char1);
-        expect(result).toContain(char2);
+        team.toArray();
+
+        expect(Array.isArray(team.characters)).toBeTruthy();
+        expect(team.characters.length).toBe(2);
+        expect(team.characters).toContain(char1);
+        expect(team.characters).toContain(char2);
     });
 
     test('should handle addAll with empty arguments', () => {
