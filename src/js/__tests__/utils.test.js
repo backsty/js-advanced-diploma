@@ -1,60 +1,121 @@
 import { calcTileType, calcHealthLevel, formatCharacterInfo } from '../utils.js';
 import { describe, test, expect } from '@jest/globals';
 
+/* 
+(*) План тестирования:
+
++Тесты для calcTileType:
+  - Все угловые случаи
+  - Все стороны
+  - Центральные клетки
+  - Граничные условия
+
++Тесты для calcHealthLevel:
+  - Все уровни здоровья
+  - Граничные значения
+  
++Тесты для formatCharacterInfo:
+  - Разные комбинации параметров
+  - Проверка форматирования 
+*/
+
 describe('calcTileType', () => {
   const boardSize = 8;
 
-  // Существующие тесты углов...
-
-  test('should return top for all top edge cells except corners', () => {
-      [1, 2, 3, 4, 5, 6].forEach(index => {
-          expect(calcTileType(index, boardSize)).toBe('top');
-      });
+  // Угловые клетки
+  test('should return correct corner types', () => {
+    expect(calcTileType(0, boardSize)).toBe('top-left');
+    expect(calcTileType(boardSize - 1, boardSize)).toBe('top-right');
+    expect(calcTileType(boardSize * (boardSize - 1), boardSize)).toBe('bottom-left');
+    expect(calcTileType((boardSize * boardSize) - 1, boardSize)).toBe('bottom-right');
   });
 
-  test('should return bottom for all bottom edge cells except corners', () => {
-      [57, 58, 59, 60, 61, 62].forEach(index => {
-          expect(calcTileType(index, boardSize)).toBe('bottom');
-      });
+  // Верхняя сторона
+  test('should return top for top edge', () => {
+    for (let i = 1; i < boardSize - 1; i++) {
+      expect(calcTileType(i, boardSize)).toBe('top');
+    }
   });
 
-  test('should return left for all left edge cells except corners', () => {
-      [8, 16, 24, 32, 40, 48].forEach(index => {
-          expect(calcTileType(index, boardSize)).toBe('left');
-      });
+  // Нижняя сторона
+  test('should return bottom for bottom edge', () => {
+    for (let i = boardSize * (boardSize - 1) + 1; i < boardSize * boardSize - 1; i++) {
+      expect(calcTileType(i, boardSize)).toBe('bottom');
+    }
   });
 
-  test('should return right for all right edge cells except corners', () => {
-      [15, 23, 31, 39, 47, 55].forEach(index => {
-          expect(calcTileType(index, boardSize)).toBe('right');
-      });
+  // Левая сторона
+  test('should return left for left edge', () => {
+    for (let i = boardSize; i < boardSize * (boardSize - 1); i += boardSize) {
+      expect(calcTileType(i, boardSize)).toBe('left');
+    }
   });
 
-  test('should return center for various center positions', () => {
-      [9, 10, 17, 18, 25, 26].forEach(index => {
-          expect(calcTileType(index, boardSize)).toBe('center');
-      });
+  // Правая сторона
+  test('should return left for left edge', () => {
+    for (let i = boardSize * 2 - 1; i < boardSize * (boardSize - 1); i += boardSize) {
+      expect(calcTileType(i, boardSize)).toBe('right');
+    }
+  });
+
+  // Центральные клетки
+  test('should return center for center cells', () => {
+    const centerIndexes = [9, 10, 17, 18, 25, 26, 33, 34, 41,42, 49, 50];
+    centerIndexes.forEach((index) => {
+      expect(calcTileType(index, boardSize)).toBe('center');
+    });
+  });
+});
+
+describe('calcHealthLevel', () => {
+  // Критический уровень здоровья
+  test('should return critical for hralth < 15', () => {
+    expect(calcHealthLevel(0)).toBe('critical');
+    expect(calcHealthLevel(14)).toBe('critical');
+    expect(calcHealthLevel(14.9)).toBe('critical');
+  });
+
+  // Нормальный уровень здоровья
+  test('should return normal for 15 <= health <= 50', () => {
+    expect(calcHealthLevel(15)).toBe('normal');
+    expect(calcHealthLevel(30)).toBe('normal');
+    expect(calcHealthLevel(49)).toBe('normal');
+    expect(calcHealthLevel(49.9)).toBe('normal');
+  });
+
+  // Высокий уровень здоровья
+  test('should return high for health >= 50', () => {
+    expect(calcHealthLevel(50)).toBe('high');
+    expect(calcHealthLevel(75)).toBe('high');
+    expect(calcHealthLevel(100)).toBe('high');
   });
 });
 
 describe('formatCharacterInfo', () => {
-  test('should format character info correctly', () => {
+  test('should format basic character info', () => {
     const character = {
       level: 1,
-      attack: 10,
-      defence: 40,
-      health: 50
-    };
-    expect(formatCharacterInfo(character)).toBe('🎖1 ⚔10 🛡40 ❤50');
-  });
-
-  test('should format different character levels', () => {
-    const character = {
-      level: 2,
       attack: 25,
       defence: 25,
-      health: 100
+      health: 100,
     };
-    expect(formatCharacterInfo(character)).toBe('🎖2 ⚔25 🛡25 ❤100');
+    expect(formatCharacterInfo(character)).toBe('🎖1 ⚔25 🛡25 ❤100');
+  });
+
+  test('should format different character info', () => {
+    const testCases = [
+      {
+        input: { level: 2, attack: 40, defence: 10, health: 50 },
+        expected: '🎖2 ⚔40 🛡10 ❤50'
+      },
+      {
+        input: { level: 4, attack: 10, defence: 40, health: 1 },
+        expected: '🎖4 ⚔10 🛡40 ❤1'
+      }
+    ];
+    
+    testCases.forEach(({ input, expected }) => {
+      expect(formatCharacterInfo(input)).toBe(expected);
+    });
   });
 });
