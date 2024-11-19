@@ -1,5 +1,4 @@
 import Team from '../Team.js';
-import Bowman from '../characters/Bowman.js';
 import { describe, test, expect, beforeEach } from '@jest/globals';
 
 // src/js/Team.test.js
