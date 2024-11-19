@@ -1,7 +1,6 @@
 import { describe, test, expect } from '@jest/globals';
 import { characterGenerator, generateTeam } from '../generators.js';
 import Bowman from '../characters/Bowman.js';
-import Team from '../Team.js';
 
 describe('Generator Tests', () => {
     describe('characterGenerator', () => {
