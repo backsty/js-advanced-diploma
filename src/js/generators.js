@@ -26,6 +26,14 @@ export function* characterGenerator(allowedTypes, maxLevel) {
  * @returns экземпляр Team, хранящий экземпляры персонажей. Количество персонажей в команде - characterCount
  * */
 export function generateTeam(allowedTypes, maxLevel, characterCount) {
+  if (!allowedTypes || allowedTypes.length === 0) {
+    throw new Error('Allowed types array cannot be empty');
+  }
+
+  if (characterCount <= 0) {
+    throw new Error('Character count must be positive');
+  }
+
   const generator = characterGenerator(allowedTypes, maxLevel);
   const team = new Team();
   
@@ -34,6 +42,7 @@ export function generateTeam(allowedTypes, maxLevel, characterCount) {
     team.add(nextHero.character);
   }
 
-  team.toArray();
-  return team.characters;
+  // team.toArray();
+  // return team.characters;
+  return team;
 }
