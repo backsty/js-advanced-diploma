@@ -3,19 +3,61 @@ import GameState from '../GameState.js';
 
 
 describe('GameState', () => {
-    test('should create with player first step', () => {
-        const state = new GameState();
-        expect(state.currentStep).toBe('player');
+    describe('constructor', () => {
+        test('should create with player first step', () => {
+            const state = new GameState();
+            expect(state.currentStep).toBe('player');
+        });
     });
 
-    test('should return null for invalid object in from()', () => {
-        const result = GameState.from('invalid object');
-        expect(result).toBeNull();
-    });
+    describe('from static method', () => {
+        test('should return null for non-object inputs', () => {
+            expect(GameState.from('string')).toBeNull();
+            expect(GameState.from(123)).toBeNull();
+            expect(GameState.from(null)).toBeNull();
+            expect(GameState.from(undefined)).toBeNull();
+            expect(GameState.from(true)).toBeNull();
+            expect(GameState.from([])).toBeNull();
+            expect(GameState.from(() => {})).toBeNull();
+        });
 
-    test('should restore state from object', () => {
-        const data = { currentStep: 'enemy' };
-        const state = GameState.from(data);
-        expect(state.currentStep).toBe('enemy');
+        test('should create state from valid object', () => {
+            const input = {
+                level: 1,
+                positionsToDraw: [1, 2, 3],
+                theme: 'dark',
+                score: 100
+            };
+
+            expect(GameState.from(input)).toEqual({
+                level: 1,
+                positions: [1, 2, 3],
+                theme: 'dark',
+                score: 100
+            });
+        });
+
+        test('should create state from valid object', () => {
+            const input = {
+                level: 1,
+                positionsToDraw: []
+            };
+
+            expect(GameState.from(input)).toEqual({
+                level: 1,
+                positions: [],
+                theme: undefined,
+                score: undefined
+            });
+        });
+
+        test('should handle empty object', () => {
+            expect(GameState.from({})).toEqual({
+                level: undefined,
+                positions: undefined,
+                theme: undefined,
+                score: undefined
+            });
+        });
     });
 });
