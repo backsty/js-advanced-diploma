@@ -47,24 +47,19 @@ describe('App initialization', () => {
         document.body.innerHTML = '';
         
         const initApp = async () => {
-            return new Promise(async (resolve, reject) => {
-                try {
-                    const app = await import('../app.js');
-                    
-                    await new Promise(resolveDOM => {
-                        document.dispatchEvent(new Event('DOMContentLoaded'));
-                        setTimeout(resolveDOM, 0);
-                    });
-                   
-                    const container = document.querySelector('#game-container');
-                    if (!container) {
-                        throw new Error('Game container not found');
-                    }
-                    resolve(app);
-                } catch (error) {
-                    reject(error);
-                }
+            const app = await import('../app.js');
+            
+            await new Promise(resolve => {
+                document.dispatchEvent(new Event('DOMContentLoaded'));
+                setTimeout(resolve, 0);
             });
+            
+            const container = document.querySelector('#game-container');
+            if (!container) {
+                throw new Error('Game container not found');
+            }
+            
+            return app;
         };
         
         await expect(initApp()).rejects.toThrow('Game container not found');
