@@ -156,6 +156,7 @@ export default class GamePlay {
    */
   addEscListener(callback) {
     this.escListener = callback;
+    document.addEventListener('keydown', this.onEsc.bind(this));
   }
 
   onCellEnter(event) {
@@ -193,7 +194,9 @@ export default class GamePlay {
   onEsc(event) {
     if (event.key === 'Escape') {
       event.preventDefault();
-      this.escListener();
+      if (typeof this.escListener === 'function') {
+        this.escListener();
+      }
     }
   }
 

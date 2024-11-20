@@ -48,6 +48,7 @@ export default class GameController {
     this.selected = null;
     this.currentStatus = null;
     this.positionsToDraw = [];
+    this.isActionInProgress = false;
     this.area = this.getRowArray();
   }
 
@@ -458,6 +459,7 @@ export default class GameController {
   }
 
   moveEnemyAttack() {
+    this.isActionInProgress = true;
     this.gamePlay.deselectAll();
     const enemies = this.positionsToDraw.filter((item) => item.side === this.sides.enemy.name);
     const enemyAttacker = enemies.find((item) => item.character.attack === Math.max.apply(null, enemies.map((hero) => hero.character.attack)));
@@ -476,11 +478,16 @@ export default class GameController {
   }
 
   onCellClick(index) {
+    if (this.isActionInProgress) {
+      return;
+    }
+
     if (index < 0 || index >= this.gamePlay.boardSize ** 2) {
       return;
     }
   
     const actionAfterAttack = () => {
+      this.isActionInProgress = false;
       if (this.selected && this.selected.character.health <= 0) {
         this.positionsToDraw = this.positionsToDraw.filter(char => char !== this.selected);
         this.selected = null;
@@ -576,6 +583,7 @@ export default class GameController {
         this.attacks.includes(index) && 
         currentPosition?.side === this.sides.enemy.name) {
       
+      this.isActionInProgress = true;
       const damage = this.calculateDamage(this.selected, currentPosition);
       currentPosition.character.health = Math.max(0, currentPosition.character.health - damage);
   
